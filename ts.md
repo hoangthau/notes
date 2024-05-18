@@ -111,6 +111,88 @@ function assertUserIsAdmin(
   }
 }
 ```
+# Classes as Types and Values
+
+```.ts
+class CustomError extends Error {
+  constructor(message: string, public code: number) {
+    super(message);
+    this.name = "CustomError";
+  }
+}
+
+// How do we type the 'error' parameter?
+const handleCustomError = (error: unknown) => {
+  console.error(error.code);
+
+  type test = Expect<Equal<typeof error.code, number>>;
+};
+```
+
+# Classes with Type Predicate
+We expect `form.isInvalid()` is only return string as errors, but it return string or undefined like:
+
+```.ts
+class Form<TValues> {
+  error?: string;
+
+  constructor(
+    public values: TValues,
+    private validate: (values: TValues) => string | void,
+  ) {}
+
+  isInvalid(): {
+    const result = this.validate(this.values);
+
+    if (typeof result === "string") {
+      this.error = result;
+      return true;
+    }
+
+    this.error = undefined;
+    return false;
+  }
+}
+
+const form = new Form(
+  {
+    username: "",
+    password: "",
+  },
+  (values) => {
+    if (!values.username) {
+      return "Username is required";
+    }
+
+    if (!values.password) {
+      return "Password is required";
+    }
+  },
+);
+
+if (form.isInvalid()) {
+  type test1 = Expect<Equal<typeof form.error, string>>; // Wrong here
+} else {
+  type test2 = Expect<Equal<typeof form.error, string | undefined>>;
+}
+
+```
+We will predicate `isInvalid` function is correct type form & { error: string } with
+Type Predicate syntax for a function:
+
+```.ts
+isInvalid(): this is Form<TValues> & { error: string } {
+  const result = this.validate(this.values);
+
+  if (typeof result === "string") {
+    this.error = result;
+    return true;
+  }
+
+  this.error = undefined;
+  return false;
+}
+```
 
 
 
