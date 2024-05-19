@@ -260,9 +260,14 @@ assertIsLoggedIn(): asserts this is SDK & { loggedInUser: User } {
   }
 }
 ```
-
-  
 </details>
+
+# Where do external types come from?
+- `lib.d.ts` : types for JS from TS team
+- `lib.dom.d.ts`: types for DOM from other team outside TS (Mozilla)
+- `@type/react`, `@type/node`, `@type/lodash` types from libs - type definitions - use for some project that did not use TS
+  but have separate @type for their user like React, Express
+- Types shipped within the lib: vite, vue, jest, react-query
 
 
 
