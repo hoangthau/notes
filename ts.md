@@ -326,6 +326,74 @@ export const fetchUserWithFullName = async (
 ```
 </details>
 
+# Passing Type Arguments with Lodash
+```
+interface User {
+  name: string;
+  age: number;
+}
+
+const groupByAge = (array: unknown[]) => {
+  const grouped = _.groupBy(array, "age");
+
+  return grouped;
+};
+
+const result = groupByAge([
+  {
+    name: "John",
+    age: 20,
+  },
+  {
+    name: "Jane",
+    age: 20,
+  },
+  {
+    name: "Mary",
+    age: 30,
+  },
+]);
+```
+collection.d.ts
+```.ts
+groupBy<T>(collection: List<T> | null | undefined, iteratee?: ValueIteratee<T>): Dictionary<T[]>;
+```
+
+Pass Type Arguments
+```
+const groupByAge = <T>(array: T[]) => {
+  const grouped = _.groupBy<T>(array, "age");
+
+  return grouped;
+};
+
+// type for result
+const result: _.Dictionary<{
+    name: string;
+    age: number;
+}[]>
+```
+
+Pass Generic type for reduce function
+```.ts
+interface Person {
+  name: string;
+  age: number;
+}
+
+const persons: Person[] = [
+  { name: 'John', age: 30 },
+  { name: 'Alice', age: 45 },
+];
+
+const ageByPerson = persons.reduce<Record<string, string>>((result, person) => ({
+  ...result,
+  [person.age]: [...result[person.age] ?? [], person.age]
+}), {});
+
+console.log(ageByPerson);
+```
+
 
 
 
