@@ -327,7 +327,7 @@ export const fetchUserWithFullName = async (
 </details>
 
 # Passing Type Arguments with Lodash
-```
+```.ts
 interface User {
   name: string;
   age: number;
@@ -360,7 +360,7 @@ groupBy<T>(collection: List<T> | null | undefined, iteratee?: ValueIteratee<T>):
 ```
 
 Pass Type Arguments
-```
+```.ts
 const groupByAge = <T>(array: T[]) => {
   const grouped = _.groupBy<T>(array, "age");
 
