@@ -45,6 +45,45 @@ function myFunc(): boolean;
 var myVar: number;
 ```
 
+How do we overwrite type from external libs
+Example:
+Here's what getAnimatingState from the `fake-animation-lib` looks like:
+```.ts
+export const getAnimatingState = (): string => {
+  if (Math.random() > 0.5) {
+    return "before-animation";
+  }
+
+  if (Math.random() > 0.5) {
+    return "animating";
+  }
+
+  return "after-animation";
+};
+```
+
+```.ts
+import { getAnimatingState } from "fake-animation-lib";
+const animatingState = getAnimatingState();
+type Example = typeof animatingState;
+
+// We want Example type to be "before-animation" | "animating" | "after-animation"
+
+```
+Solution:
+We can create a definition type `something.d.ts`
+
+```.ts
+declare module "fake-animation-lib-solution" {
+  export type AnimatingState =
+    | "before-animation"
+    | "animating"
+    | "after-animation";
+  export function getAnimatingState(): AnimatingState;
+}
+
+```
+
 # Filtering with Type Predicates
 ```.ts
 export const values = ["a", "b", undefined, "c", undefined];
@@ -266,7 +305,7 @@ assertIsLoggedIn(): asserts this is SDK & { loggedInUser: User } {
 - `lib.d.ts` : types for JS from TS team
 - `lib.dom.d.ts`: types for DOM from other team outside TS (Mozilla)
 - `@type/react`, `@type/node`, `@type/lodash` types from libs - type definitions - use for some project that did not use TS
-  but have separate @type for their user like React, Express
+  but have separate @type for their user like React, Express: https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types
 - Types shipped within the lib: vite, vue, jest, react-query
 
 # Extract Types to Extend an external libs
