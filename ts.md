@@ -269,6 +269,63 @@ assertIsLoggedIn(): asserts this is SDK & { loggedInUser: User } {
   but have separate @type for their user like React, Express
 - Types shipped within the lib: vite, vue, jest, react-query
 
+# Extract Types to Extend an external libs
+We can not modify this file
+```.ts
+// inside fake-external-lib/fetches.ts
+export const fetchUser = async (id: string) => {
+  return {
+    id,
+    firstName: "John",
+    lastName: "Doe",
+  };
+};
+
+```
+
+```.ts
+/**
+ * We're using a function from fake-external lib, but we need
+ * to extend the types. Extract the types below.
+ */
+
+type ParametersOfFetchUser = unknown;
+
+type ReturnTypeOfFetchUserWithFullName = unknown;
+
+export const fetchUserWithFullName = async (
+  ...args: ParametersOfFetchUser
+): Promise<ReturnTypeOfFetchUserWithFullName> => {
+  const user = await fetchUser(...args);
+  return {
+    ...user,
+    fullName: `${user.firstName} ${user.lastName}`,
+  };
+};
+```
+
+<details>
+<summary>Solution</summary>
+
+```.ts
+type ParametersOfFetchUser = Parameters<typeof fetchUser>;
+
+type ReturnTypeOfFetchUserWithFullName = Awaited<
+  ReturnType<typeof fetchUser>
+> & { fullName: string };
+
+export const fetchUserWithFullName = async (
+  ...args: ParametersOfFetchUser
+): Promise<ReturnTypeOfFetchUserWithFullName> => {
+  const user = await fetchUser(...args);
+  return {
+    ...user,
+    fullName: `${user.firstName} ${user.lastName}`,
+  };
+};
+```
+</details>
+
 
 
 
